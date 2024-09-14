@@ -12,6 +12,8 @@ import DockerLogo from "./logos/docker.png";
 import ProfileImage from "./profile-pic.png";
 import Logo from "./logo.png";
 import Avatar from "./girl3.png";
+import signUpFormImage from "./images/signUpForm.jpg";
+import signInFormImage from "./images/signInForm.jpg";
 
 export const images = {
   angular: AngularLogo,
@@ -28,4 +30,6 @@ export const images = {
   profile: ProfileImage,
   logo: Logo,
   avatar: Avatar,
+  signUpForm: signUpFormImage,
+  signInForm: signInFormImage,
 };
