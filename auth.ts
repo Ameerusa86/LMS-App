@@ -22,4 +22,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
     verifyRequest: "/auth/verify-request",
   },
+  callbacks: {},
 });

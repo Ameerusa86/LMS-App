@@ -72,13 +72,13 @@ export const SignInForm = () => {
           <div className="flex justify-center space-x-4 mt-4">
             <Button
               className="bg-gray-700 text-white hover:bg-gray-900 px-4 py-2"
-              onClick={() => signIn("github")}
+              onClick={() => signIn("github", { redirectTo: "/" })}
             >
               <FaGithub size={20} />
             </Button>
             <Button
               className="bg-red-600 text-white hover:bg-red-700 px-4 py-2"
-              onClick={() => signIn("google")}
+              onClick={() => signIn("google", { redirectTo: "/" })}
             >
               <FaGoogle size={20} />
             </Button>
