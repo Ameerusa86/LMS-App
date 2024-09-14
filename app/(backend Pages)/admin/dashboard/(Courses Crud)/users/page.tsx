@@ -21,12 +21,11 @@ import { FaUser } from "react-icons/fa";
 interface User {
   id: string;
   email: string;
-  fullName: string;
+  name: string;
   isAdmin: boolean;
 }
 
 const Users: React.FC = () => {
-  // State types
   const [users, setUsers] = useState<User[]>([]);
   const [newUserEmail, setNewUserEmail] = useState<string>("");
   const [newUserPassword, setNewUserPassword] = useState<string>("");
@@ -35,6 +34,7 @@ const Users: React.FC = () => {
   const [editUserEmail, setEditUserEmail] = useState<string>("");
   const [editUserFullName, setEditUserFullName] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState(true); // Add loading state
 
   // Fetch users from Firestore
   useEffect(() => {
@@ -44,12 +44,14 @@ const Users: React.FC = () => {
         const fetchedUsers: User[] = usersSnapshot.docs.map((doc) => ({
           id: doc.id,
           email: doc.data().email,
-          fullName: doc.data().fullName,
+          name: doc.data().name,
           isAdmin: doc.data().isAdmin,
         }));
         setUsers(fetchedUsers);
       } catch (error) {
         console.error("Error fetching users:", (error as Error).message);
+      } finally {
+        setLoading(false); // Set loading to false once data is fetched
       }
     };
 
@@ -83,10 +85,11 @@ const Users: React.FC = () => {
         {
           id: user.uid,
           email: newUserEmail,
-          fullName: newUserFullName,
+          name: newUserFullName,
           isAdmin: false,
         },
       ]);
+
       // Reset input fields
       setNewUserEmail("");
       setNewUserPassword("");
@@ -146,7 +149,7 @@ const Users: React.FC = () => {
   const handleStartEditing = (user: User) => {
     setEditingUser(user);
     setEditUserEmail(user.email);
-    setEditUserFullName(user.fullName);
+    setEditUserFullName(user.name);
   };
 
   // Toggle admin status for a user
@@ -164,6 +167,11 @@ const Users: React.FC = () => {
       console.error("Error toggling admin status:", (error as Error).message);
     }
   };
+
+  // Only render users after loading is complete
+  if (loading) {
+    return <p>Loading users...</p>;
+  }
 
   return (
     <DashboardLayout>
@@ -248,7 +256,7 @@ const Users: React.FC = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-100">
-                  <td className="border px-4 py-2">{user.fullName}</td>
+                  <td className="border px-4 py-2">{user.name}</td>
                   <td className="border px-4 py-2">{user.email}</td>
                   <td className="border px-4 py-2">
                     {user.isAdmin ? "Admin" : "User"}
