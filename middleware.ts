@@ -7,4 +7,6 @@ import NextAuth from "next-auth";
 
 // 2. Wrapped middleware option
 const { auth } = NextAuth(authConfig);
-export default auth(async function middleware(req) {});
+export default auth(async function middleware(req) {
+  // if the user is not authenticated, redirect to the login page
+});

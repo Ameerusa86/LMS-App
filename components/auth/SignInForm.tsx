@@ -8,8 +8,18 @@ import { FaUser, FaLock, FaGithub, FaGoogle } from "react-icons/fa"; // Icons
 import { images } from "@/public/images";
 import { Separator } from "../ui/separator";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export const SignInForm = () => {
+  const router = useRouter();
+
+  const handleSignIn = async (provider: string) => {
+    await signIn(provider, { callbackUrl: "/" });
+
+    // Redirect to dashboard
+    router.push("/");
+  };
+
   return (
     <motion.div
       className="min-h-screen flex items-center justify-center bg-gray-100"
@@ -72,13 +82,13 @@ export const SignInForm = () => {
           <div className="flex justify-center space-x-4 mt-4">
             <Button
               className="bg-gray-700 text-white hover:bg-gray-900 px-4 py-2"
-              onClick={() => signIn("github", { redirectTo: "/" })}
+              onClick={() => handleSignIn("github")}
             >
               <FaGithub size={20} />
             </Button>
             <Button
               className="bg-red-600 text-white hover:bg-red-700 px-4 py-2"
-              onClick={() => signIn("google", { redirectTo: "/" })}
+              onClick={() => handleSignIn("google")}
             >
               <FaGoogle size={20} />
             </Button>
