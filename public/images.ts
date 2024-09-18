@@ -14,6 +14,7 @@ import Logo from "./logo.png";
 import Avatar from "./girl3.png";
 import signUpFormImage from "./images/signUpForm.jpg";
 import signInFormImage from "./images/signInForm.jpg";
+import AccessDenied from "./images/access-denied.jpg";
 
 export const images = {
   angular: AngularLogo,
@@ -32,4 +33,5 @@ export const images = {
   avatar: Avatar,
   signUpForm: signUpFormImage,
   signInForm: signInFormImage,
+  accessDenied: AccessDenied,
 };
