@@ -69,11 +69,17 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             {description}
           </p>
 
-          <div className="flex flex-col justify-between items-center">
-            <span className="ml-2 text-xs sm:text-sm md:text-base text-gray-800 font-semibold">
+          <div className="flex flex-col justify-between items-start">
+            {" "}
+            {/* Changed to items-start to align content to the left */}
+            <span className="text-xs sm:text-sm md:text-base text-gray-800 font-semibold text-left">
+              {" "}
+              {/* Added text-left */}
               Author: {author}
             </span>
-            <span className="text-xs sm:text-sm mt-2">
+            <span className="text-xs sm:text-sm mt-2 text-left">
+              {" "}
+              {/* Added text-left */}
               Chapters: {chaptersCount}
             </span>
             <Button
