@@ -8,11 +8,13 @@ import Image from "next/image";
 import Navlinks from "@/constants/Navlinks";
 import Profile from "../Profile";
 import { useSession } from "next-auth/react";
-import Spinner from "../spinner";
 import Spinner2 from "../spinner2";
 
 const Navbar: React.FC = () => {
   const { data: session, status } = useSession();
+
+  // Check if the user is an admin
+  const isAdmin = session?.user?.isAdmin;
 
   return (
     <header
@@ -38,6 +40,12 @@ const Navbar: React.FC = () => {
               {link.title}
             </Link>
           ))}
+          {/* Conditionally add "Dashboard" link for admin users */}
+          {isAdmin && (
+            <Link href="/admin/dashboard" className="nav__link">
+              Dashboard
+            </Link>
+          )}
         </nav>
 
         {/* Auth Section */}
@@ -48,6 +56,7 @@ const Navbar: React.FC = () => {
             </div>
           ) : session && session.user ? (
             <div className="hidden md:flex items-center justify-center gap-x-3">
+              {/* User Profile Section */}
               <Profile imageUrl={session.user.image || ""} />
             </div>
           ) : (

@@ -12,6 +12,7 @@ import Image from "next/image";
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
+  const isAdmin = session?.user?.isAdmin;
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -88,7 +89,7 @@ const MobileNav = () => {
                   onClick={handleClose}
                 >
                   <motion.h1
-                    className="nav__link text-[20px] ml-12 pb-2 sm:text-[30px]"
+                    className="nav__link text-[20px] ml-12 pb-2 sm:text-[30px] whitespace-nowrap"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -97,6 +98,22 @@ const MobileNav = () => {
                   </motion.h1>
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  href="/admin/dashboard"
+                  className="block text-center py-4 text-2xl"
+                  onClick={handleClose}
+                >
+                  <motion.h1
+                    className="nav__link text-[20px] ml-12 pb-2 sm:text-[30px] whitespace-nowrap"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    Dashboard
+                  </motion.h1>
+                </Link>
+              )}
               <div className="mx-auto">sign out</div>
             </motion.div>
           </>

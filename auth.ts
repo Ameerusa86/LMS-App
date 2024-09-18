@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import { FirestoreAdapter } from "@auth/firebase-adapter";
@@ -22,5 +23,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
     verifyRequest: "/auth/verify-request",
   },
-  callbacks: {},
+  callbacks: {
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        token.user = {
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          isAdmin: user.isAdmin,
+        };
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = token.user as AdapterUser & {
+        name: string;
+        email: string;
+        image: string;
+        isAdmin: boolean;
+      };
+      return session;
+    },
+  },
 });
