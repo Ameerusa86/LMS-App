@@ -42,7 +42,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="w-full sm:w-[350px] lg:w-[450px] bg-white rounded-xl shadow-lg overflow-hidden transform transition">
+      <div className="w-full sm:w-full lg:w-full bg-white rounded-xl overflow-hidden transform transition">
         <div className="relative">
           <Image
             height={400}
