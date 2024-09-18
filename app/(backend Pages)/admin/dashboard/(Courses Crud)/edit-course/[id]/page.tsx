@@ -8,8 +8,6 @@ import {
   getDocs,
   updateDoc,
   fs_database,
-  query,
-  where,
   getDoc,
 } from "@/utils/firebase";
 import Select from "react-select";
@@ -59,14 +57,19 @@ const EditCourse: React.FC<Params> = ({ params }) => {
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [price, setPrice] = useState<number | string>("");
   const [category, setCategory] = useState<SingleValue<Category> | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+
   const [technology, setTechnology] = useState<MultiValue<Technology>>([]);
   const [technologies, setTechnologies] = useState<Technology[]>([]);
+
   const [mainVideoURL, setMainVideoURL] = useState<string>("");
   const [steps, setSteps] = useState<Course["steps"]>([]);
+
   const [isFree, setIsFree] = useState<boolean>(false);
+  const [price, setPrice] = useState<string>("");
+  const [priceType, setPriceType] = useState<string>("Free");
+  const [priceError, setPriceError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -78,12 +81,20 @@ const EditCourse: React.FC<Params> = ({ params }) => {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          const courseData = { id: docSnap.id, ...docSnap.data() } as Course;
+          const courseData = {
+            id: docSnap.id,
+            ...docSnap.data(),
+            technology: docSnap.data().technology || [], // Set default value if undefined
+            steps: docSnap.data().steps || [], // Set default value if undefined
+          } as Course;
+
           console.log("Fetched course data:", courseData); // Debugging: log course data
           setCourse(courseData);
+
+          // Populate form fields with fetched data
           setTitle(courseData.title);
           setDescription(courseData.description);
-          setPrice(courseData.price);
+          setPrice(courseData.price.toString());
           setCategory({
             label: courseData.category,
             value: courseData.category,
@@ -146,12 +157,18 @@ const EditCourse: React.FC<Params> = ({ params }) => {
     e.preventDefault();
     if (!course) return;
 
+    // Validate price if custom price is selected
+    if (!isFree && Number(price) < 1) {
+      setPriceError("Price must be at least 1 if it is not free.");
+      return;
+    }
+
     try {
       const docRef = doc(fs_database, "courses", course.id);
       await updateDoc(docRef, {
         title: title || course.title,
         description: description || course.description,
-        price: isFree ? 0 : price || course.price,
+        price: isFree ? 0 : Number(price) || course.price,
         category: category ? category.value : course.category,
         technology: technology.length
           ? technology.map((tech) => tech.value)
@@ -161,9 +178,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
           ? steps.map((step, index) => ({
               ...step,
               stepVideoURL:
-                step.stepVideoURL ||
-                course.steps.find((s, i) => i === index)?.stepVideoURL ||
-                "",
+                step.stepVideoURL || course.steps?.[index]?.stepVideoURL || "", // Use optional chaining here
             }))
           : course.steps,
       });
@@ -207,6 +222,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
           Edit Course
         </h1>
         <form onSubmit={handleUpdateCourse}>
+          {/* Course Title */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Course Title
@@ -220,6 +236,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
             />
           </div>
 
+          {/* Description */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Description
@@ -232,6 +249,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
             ></textarea>
           </div>
 
+          {/* Price */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Price
@@ -242,7 +260,10 @@ const EditCourse: React.FC<Params> = ({ params }) => {
                 name="priceOption"
                 value="free"
                 checked={isFree}
-                onChange={() => setIsFree(true)}
+                onChange={() => {
+                  setIsFree(true);
+                  setPriceError(null); // Reset price error if Free is selected
+                }}
                 className="mr-2"
               />
               <label className="mr-4">Free</label>
@@ -251,22 +272,32 @@ const EditCourse: React.FC<Params> = ({ params }) => {
                 name="priceOption"
                 value="custom"
                 checked={!isFree}
-                onChange={() => setIsFree(false)}
+                onChange={() => {
+                  setIsFree(false);
+                  setPriceError(null); // Reset price error for Custom Price
+                }}
                 className="mr-2"
               />
               <label>Custom Price</label>
             </div>
             {!isFree && (
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Course Price"
-              />
+              <>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Course Price"
+                  min={1} // Enforce minimum price value
+                />
+                {priceError && (
+                  <p className="text-red-500 text-sm mt-1">{priceError}</p>
+                )}
+              </>
             )}
           </div>
 
+          {/* Category */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Category
@@ -280,6 +311,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
             />
           </div>
 
+          {/* Technologies */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Technologies Used
@@ -294,6 +326,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
             />
           </div>
 
+          {/* Main Video URL */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Main Video URL
@@ -307,6 +340,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
             />
           </div>
 
+          {/* Steps */}
           <div className="mb-4">
             <label className="block text-gray-800 text-sm font-bold mb-2">
               Steps
@@ -372,6 +406,7 @@ const EditCourse: React.FC<Params> = ({ params }) => {
               Add Step
             </button>
           </div>
+
           <button
             type="submit"
             className="bg-green-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-green-600 focus:outline-none"

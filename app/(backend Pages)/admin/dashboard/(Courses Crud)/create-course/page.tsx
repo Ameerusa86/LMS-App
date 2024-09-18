@@ -9,6 +9,7 @@ import Select, { SingleValue } from "react-select"; // Import SingleValue for ty
 import toast from "react-hot-toast";
 import React from "react";
 import DashboardLayout from "../../../DashboardLayout";
+import { useSession } from "next-auth/react"; // Import useSession
 
 // Type definitions
 interface Category {
@@ -30,6 +31,7 @@ const slugify = (text: string) => {
 };
 
 const CreateCourse: React.FC = () => {
+  const { data: session, status } = useSession(); // Access the user session
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [category, setCategory] = useState<Category | null>(null);
@@ -89,6 +91,7 @@ const CreateCourse: React.FC = () => {
           stepVideoURL: step.stepVideoURL,
         })),
         imageUrl,
+        author: session?.user?.name || "Anonymous", // Use the logged-in user's name
       });
       router.push("/admin/dashboard");
     } catch (error) {

@@ -10,7 +10,7 @@ interface Course {
   description: string;
   imageUrl: string;
   author: string;
-  price: string;
+  price: string | number; // Price can be a string or a number
   category: string;
   chaptersCount: number;
   slug: string;
@@ -37,9 +37,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     router.push(`/course/${course.slug}`);
   };
 
+  // Price logic: Display "Free" if price is 0, otherwise display the price with a dollar sign
+  const displayPrice = price === 0 ? "Free" : `$${price}`;
+
   return (
     <div className="flex items-center justify-center">
-      <div className="w-full sm:w-[350px] lg:w-[450px] bg-white rounded-xl shadow-lg overflow-hidden transform transition ">
+      <div className="w-full sm:w-[350px] lg:w-[450px] bg-white rounded-xl shadow-lg overflow-hidden transform transition">
         <div className="relative">
           <Image
             height={400}
@@ -55,7 +58,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             {category}
           </div>
           <div className="absolute top-0 left-0 bg-orange-500 text-white px-2 py-1 m-2 rounded-md text-xs sm:text-sm font-semibold">
-            {price}
+            {displayPrice}
           </div>
         </div>
         <div className="p-4 sm:p-6">
